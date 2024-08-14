@@ -1,3 +1,6 @@
+## Management System
+Youtube 동빈나님의 강의를 바탕으로 만들어진 MySQL연동 시스템
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
