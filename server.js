@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -11,6 +12,20 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+const data = fs.readFileSync('./database.json');
+const conf = JSON.parse(data);
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host: conf.host,
+  user: conf.user,
+  password: conf.password,
+  port: conf.port,
+  database: conf.database
+});
+
+connection.connect();
+
 app.get('/api/hello', (req, res) => {
   res.send({
     message: 'Hello Express!'
@@ -18,41 +33,16 @@ app.get('/api/hello', (req, res) => {
 });
 
 app.get('/api/customers', (req, res) => {
-  console.log('리퀘스트:');
-  // console.log(req);
-  console.log(res.contentType);
-  res.setHeader('Content-Type', 'application/json');
-  res.send([{
-      id: 1,
-      image: 'https://picsum.photos/60/60',
-      // image:
-      //   'https://m.media-amazon.com/images/M/MV5BMTQ4NTE3MTYzOF5BMl5BanBnXkFtZTcwNDM4OTcyMg@@._V1_FMjpg_UX1000_.jpg',
-      name: '이규영S',
-      birthday: '741024',
-      gender: '남',
-      job: '잡리스!!',
-    },
-    {
-      id: 2,
-      image: 'https://picsum.photos/61/61',
-      // image:
-      //   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX8VrSvHSgFQ25vhiGtnS7med8mKtbkefL1Q&s',
-      name: '수산시장S',
-      birthday: '831024',
-      gender: '여',
-      job: '생선초밥',
-    },
-    {
-      id: 3,
-      image: 'https://picsum.photos/59/59',
-      // image:
-      //   'https://m.media-amazon.com/images/I/715R1ZcMxzL._AC_UF1000,1000_QL80_.jpg',
-      name: '망원경S',
-      birthday: '941024',
-      gender: '남',
-      job: '멀리보다',
+  connection.query(
+      "SELECT * FROM CUSTOMER",
+      (err, rows, fields) => {
+        res.send(rows);
+        console.log(rows);
     }
-  ]);
+  );
+  // console.log(res.contentType);
+  // res.setHeader('Content-Type', 'application/json');
+  // res.send();
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
